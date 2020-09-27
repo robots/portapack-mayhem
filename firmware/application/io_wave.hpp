@@ -156,6 +156,8 @@ private:
 	uint32_t sample_rate_ { };
 	std::string title_string { };
 	std::filesystem::path last_path { };
+
+	bool check_header();
 };
 
 class WAVFileWriter : public FileWriter {

@@ -30,6 +30,8 @@
 void AudioTXProcessor::execute(const buffer_c8_t& buffer){
 	
 	if (!configured) return;
+
+	ai = 0;
 	
 	// Zero-order hold (poop)
 	for (size_t i = 0; i < buffer.count; i++) {
@@ -52,6 +54,17 @@ void AudioTXProcessor::execute(const buffer_c8_t& buffer){
 		
 		re = sine_table_i8[(sphase & 0xFF000000U) >> 24];
 		im = sine_table_i8[(phase & 0xFF000000U) >> 24];
+
+		if (!as) {
+				as = 31;
+				audio_buffer.p[ai++] = (int16_t)(audio_sample - 0x80) << 7;
+		} else {
+			as--;
+		}
+		if(ai == 32) {
+			audio_output.write(audio_buffer);
+			ai = 0;
+		}
 		
 		buffer.p[i] = { (int8_t)re, (int8_t)im };
 	}
@@ -96,6 +109,8 @@ void AudioTXProcessor::audio_config(const AudioTXConfigMessage& message) {
 	tone_gen.configure(message.tone_key_delta, message.tone_key_mix_weight);
 	progress_interval_samples = message.divider;
 	resample_acc = 0;
+	audio_output.configure(false);
+	as = 0;
 }
 
 void AudioTXProcessor::replay_config(const ReplayConfigMessage& message) {

@@ -28,6 +28,8 @@
 #include "tone_gen.hpp"
 #include "stream_output.hpp"
 
+#include "audio_output.hpp"
+
 class AudioTXProcessor : public BasebandProcessor {
 public:
 	void execute(const buffer_c8_t& buffer) override;
@@ -61,6 +63,14 @@ private:
 	
 	TXProgressMessage txprogress_message { };
 	RequestSignalMessage sig_message { RequestSignalMessage::Signal::FillRequest };
+
+	std::array<int16_t, 32> audio { };		// 2048/64
+	const buffer_s16_t audio_buffer {
+		(int16_t*)audio.data(),
+		sizeof(audio) / sizeof(int16_t)
+	};
+	uint16_t as { 0 }, ai { 0 };
+	AudioOutput audio_output { };
 };
 
 #endif
