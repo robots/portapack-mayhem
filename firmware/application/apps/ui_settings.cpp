@@ -25,6 +25,7 @@
 #include "ui_navigation.hpp"
 #include "ui_touch_calibration.hpp"
 
+#include "ui_receiver.hpp"
 #include "portapack_persistent_memory.hpp"
 #include "lpc43xx_cpp.hpp"
 using namespace lpc43xx;
@@ -144,6 +145,8 @@ SetRadioView::SetRadioView(
 	}
 
 	add_children({
+		&label_clkout_frequency,
+		&field_clkout_frequency,
 		&check_clkout,
 		&labels_bias,
 		&check_bias,
@@ -157,12 +160,33 @@ SetRadioView::SetRadioView(
 
 	form_init(model);
 
+	label_clkout_frequency.set_style(&style_text);
+
 	check_clkout.set_value(portapack::persistent_memory::clkout_enabled());
 	check_clkout.on_select = [this](Checkbox&, bool v) {
-		clock_manager.enable_clock_output(v);
 		portapack::persistent_memory::set_clkout_enabled(v);
+		uint32_t f = portapack::persistent_memory::clkout_frequency();
+		clock_manager.enable_clock_output(v, f);
 		StatusRefreshMessage message { };
 		EventDispatcher::send_message(message);
+	};
+
+	field_clkout_frequency.set_value(portapack::persistent_memory::clkout_frequency());
+	field_clkout_frequency.set_step(25000);
+	field_clkout_frequency.on_change = [this](rf::Frequency f) {
+		portapack::persistent_memory::set_clkout_frequency(f);
+		bool v = portapack::persistent_memory::clkout_enabled();
+		clock_manager.enable_clock_output(v, f);
+	};
+	field_clkout_frequency.on_edit = [this, &nav]() {
+		// TODO: Provide separate modal method/scheme?
+		auto new_view = nav.push<FrequencyKeypadView>(portapack::persistent_memory::clkout_frequency());
+		new_view->on_changed = [this](rf::Frequency f) {
+			this->field_clkout_frequency.set_value(f);
+			portapack::persistent_memory::set_clkout_frequency(f);
+			bool v = portapack::persistent_memory::clkout_enabled();
+			clock_manager.enable_clock_output(v, f);
+		};
 	};
 
 	check_bias.set_value(portapack::get_antenna_bias());

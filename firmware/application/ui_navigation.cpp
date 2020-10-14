@@ -318,8 +318,11 @@ void SystemStatusView::on_clk() {
 	} else {
 		v = true;
 	}
-	portapack::clock_manager.enable_clock_output(v);
+
 	portapack::persistent_memory::set_clkout_enabled(v);
+	uint32_t f = portapack::persistent_memory::clkout_frequency();
+	portapack::clock_manager.enable_clock_output(v, f);
+
 	refresh();
 }
 

@@ -26,6 +26,7 @@
 #include "ui_widget.hpp"
 #include "ui_menu.hpp"
 #include "ui_navigation.hpp"
+#include "ui_receiver.hpp"
 #include "ff.h"
 
 #include <cstdint>
@@ -151,11 +152,20 @@ private:
 		{ { 6 * 8, 4 * 16 }, "PPM", Color::light_grey() },
 	};
 
+	Text label_clkout_frequency {
+		{ 4*8, 7 * 8, 13 * 8, 16 },
+		"ClkOUT (MHz):"
+	};
+
+	FrequencyField field_clkout_frequency {
+		{ (240-11*8), 7 * 8 },
+	};
 	Checkbox check_clkout {
 		{ 28, (6 * 16 - 4) },
 		4,
-		"Enable 10MHz CLKOUT"
+		"Enable CLKOUT"
 	};
+
 
 	Labels labels_bias {
 		{ { 24, 8 * 16 }, "CAUTION: Ensure that all", Color::red() },

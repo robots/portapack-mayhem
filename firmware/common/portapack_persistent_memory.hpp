@@ -94,7 +94,9 @@ uint32_t pocsag_ignore_address();
 void set_pocsag_ignore_address(uint32_t address);
 
 bool clkout_enabled();
+uint32_t clkout_frequency();
 void set_clkout_enabled(bool enable);
+void set_clkout_frequency(uint32_t frequency);
 
 } /* namespace persistent_memory */
 } /* namespace portapack */

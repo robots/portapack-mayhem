@@ -79,7 +79,7 @@ public:
 
 	Reference get_reference() const;
 
-	void enable_clock_output(bool enable);
+	void enable_clock_output(bool enable, uint32_t frequency);
 
 private:
 	I2C& i2c0;

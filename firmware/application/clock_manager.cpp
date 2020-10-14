@@ -464,10 +464,10 @@ void ClockManager::stop_audio_pll() {
 	while( cgu::pll0audio::is_locked() );
 }
 
-void ClockManager::enable_clock_output(bool enable) {
+void ClockManager::enable_clock_output(bool enable, uint32_t frequency) {
 	if(enable) {
 		clock_generator.enable_output(clock_generator_output_clkout);
-		clock_generator.set_ms_frequency(clock_generator_output_clkout, 10000000, si5351_vco_f, 0);
+		clock_generator.set_ms_frequency(clock_generator_output_clkout, frequency, si5351_vco_f, 0);
 	} else {
 		clock_generator.disable_output(clock_generator_output_clkout);
 	}
